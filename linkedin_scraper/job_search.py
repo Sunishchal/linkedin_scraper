@@ -33,7 +33,7 @@ class JobSearch(Scraper):
 
 
     def scrape_job_card(self, base_element) -> Job:
-        job_div = self.wait_for_element_to_load(name="job-card-list__title", base=base_element)
+        job_div = self.wait_for_element_to_load("jobs-unified-top-card__content--two-pane", base=base_element)
         job_title = job_div.text.strip()
         linkedin_url = job_div.get_attribute("href")
         company = base_element.find_element_by_class_name("jobs-unified-top-card__company-name").text
