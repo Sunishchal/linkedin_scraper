@@ -33,11 +33,11 @@ class JobSearch(Scraper):
 
 
     def scrape_job_card(self, base_element) -> Job:
-        job_div = self.wait_for_element_to_load("jobs-unified-top-card__content--two-pane", base=base_element)
+        job_div = self.wait_for_element_to_load("full-width artdeco-entity-lockup__title ember-view", base=base_element)
         job_title = job_div.text.strip()
         linkedin_url = job_div.get_attribute("href")
-        company = base_element.find_element_by_class_name("jobs-unified-top-card__company-name").text
-        location = base_element.find_element_by_class_name("jobs-unified-top-card__bullet").text
+        company = base_element.find_element_by_class_name("jobs-card-container__company-name").text
+        location = base_element.find_element_by_class_name("jobs-card-container__metadata-item").text
         job = Job(linkedin_url=linkedin_url, job_title=job_title, company=company, location=location, scrape=False, driver=self.driver)
         return job
 
@@ -48,14 +48,14 @@ class JobSearch(Scraper):
         if scrape_recommended_jobs:
             self.focus()
             sleep(self.WAIT_FOR_ELEMENT_TIMEOUT)
-            job_area = self.wait_for_element_to_load(name="scaffold-finite-scroll__content")
-            areas = self.wait_for_all_elements_to_load(name="artdeco-card", base=job_area)
+            job_area = self.wait_for_element_to_load(name="job-search-results-list")
+            areas = self.wait_for_all_elements_to_load(name="scaffold-layout__list-container", base=job_area)
             for i, area in enumerate(areas):
                 area_name = self.AREAS[i]
                 if not area_name:
                     continue
                 area_results = []
-                for job_posting in area.find_elements_by_class_name("jobs-job-board-list__item"):
+                for job_posting in area.find_elements_by_class_name("flex-grow-1 artdeco-entity-lockup__content ember-view"):
                     job = self.scrape_job_card(job_posting)
                     area_results.append(job)
                 setattr(self, area_name, area_results)
